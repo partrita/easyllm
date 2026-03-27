@@ -1,0 +1,4 @@
+## 2024-05-18 - Exposed HuggingFace API Token
+**Vulnerability:** A hardcoded HuggingFace API token (`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`) was exposed in `notebooks/datasets/filter-dataset.ipynb` within a `push_to_hub` method call.
+**Learning:** Hardcoding credentials often occurs in Jupyter Notebooks during testing or prototyping and accidentally gets committed. Notebooks are particularly susceptible to this because they combine code, output, and execution state.
+**Prevention:** Always use environment variables (e.g., `os.environ.get("HUGGINGFACE_TOKEN")`) or secure credential managers even in development notebooks. Implement pre-commit hooks (like `detect-secrets` or `trufflehog`) to scan notebooks before they are committed to version control.
