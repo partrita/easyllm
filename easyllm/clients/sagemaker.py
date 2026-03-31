@@ -172,14 +172,21 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
                     auth=aws_auth,
                 )
                 if res.status_code != 200:
-                    raise Exception(res.text)
+                    logger.error(
+                        f"SageMaker endpoint request failed with status code {res.status_code}: {res.text}"
+                    )
+                    raise Exception(
+                        f"SageMaker endpoint request failed with status code {res.status_code}"
+                    )
                 # parse response
                 res = res.json()[0]
 
                 # convert to schema
                 parsed = ChatCompletionResponseChoice(
                     index=_i,
-                    message=ChatMessage(role="assistant", content=res["generated_text"]),
+                    message=ChatMessage(
+                        role="assistant", content=res["generated_text"]
+                    ),
                     finish_reason=res["details"]["finish_reason"],
                 )
                 generated_tokens += res["details"]["generated_tokens"]
@@ -195,7 +202,9 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )
@@ -335,7 +344,9 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
         logger.debug(f"Generation parameters:\n{gen_kwargs}")
 
         if request.stream:
-            return stream_completion_request(url, prompt, stop, gen_kwargs, request.model)
+            return stream_completion_request(
+                url, prompt, stop, gen_kwargs, request.model
+            )
         else:
             choices = []
             generated_tokens = 0
@@ -353,7 +364,12 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
                     auth=aws_auth,
                 )
                 if res.status_code != 200:
-                    raise Exception(res.text)
+                    logger.error(
+                        f"SageMaker endpoint request failed with status code {res.status_code}: {res.text}"
+                    )
+                    raise Exception(
+                        f"SageMaker endpoint request failed with status code {res.status_code}"
+                    )
                 # parse response
                 res = res.json()[0]
                 # convert to schema
@@ -378,7 +394,9 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )
@@ -431,7 +449,9 @@ class Embedding:
             auth=aws_auth,
         )
         res = res.json()
-        parsed_res = res.get("vectors", res.get("predictions", res.get("embeddings", None)))
+        parsed_res = res.get(
+            "vectors", res.get("predictions", res.get("embeddings", None))
+        )
 
         if isinstance(request.input, list):
             for idx, i in enumerate(parsed_res):

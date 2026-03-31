@@ -99,15 +99,13 @@ class ChatCompletion:
         )
 
         if prompt_builder is None:
-            logger.warn(
-                f"""huggingface.prompt_builder가 설정되지 않았습니다.
+            logger.warn(f"""huggingface.prompt_builder가 설정되지 않았습니다.
 기본 프롬프트 빌더를 사용합니다. 모델로 전송될 프롬프트는 다음과 같습니다.
 ----------------------------------------
 {buildBasePrompt(request.messages)}.
 ----------------------------------------
 사용자 지정 프롬프트 빌더를 사용하려면 huggingface.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요.
-easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다."""
-            )
+easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다.""")
             prompt = buildBasePrompt(request.messages)
         else:
             prompt = build_prompt(request.messages, prompt_builder)
@@ -172,14 +170,21 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
                     auth=aws_auth,
                 )
                 if res.status_code != 200:
-                    raise Exception(res.text)
+                    logger.error(
+                        f"SageMaker endpoint request failed with status code {res.status_code}: {res.text}"
+                    )
+                    raise Exception(
+                        f"SageMaker endpoint request failed with status code {res.status_code}"
+                    )
                 # 응답을 구문 분석합니다.
                 res = res.json()[0]
 
                 # 스키마로 변환합니다.
                 parsed = ChatCompletionResponseChoice(
                     index=_i,
-                    message=ChatMessage(role="assistant", content=res["generated_text"]),
+                    message=ChatMessage(
+                        role="assistant", content=res["generated_text"]
+                    ),
                     finish_reason=res["details"]["finish_reason"],
                 )
                 generated_tokens += res["details"]["generated_tokens"]
@@ -195,7 +200,9 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )
@@ -279,15 +286,13 @@ class Completion:
             request.prompt = request.prompt + request.suffix
 
         if prompt_builder is None:
-            logging.warn(
-                f"""huggingface.prompt_builder가 설정되지 않았습니다.
+            logging.warn(f"""huggingface.prompt_builder가 설정되지 않았습니다.
 입력을 프롬프트 빌더로 사용합니다. 모델로 전송될 프롬프트는 다음과 같습니다.
 ----------------------------------------
 {request.prompt}.
 ----------------------------------------
 사용자 지정 프롬프트 빌더를 사용하려면 huggingface.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요.
-easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다."""
-            )
+easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다.""")
             prompt = request.prompt
         else:
             prompt = build_prompt(request.prompt, prompt_builder)
@@ -335,7 +340,9 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
         logger.debug(f"생성 매개변수:\n{gen_kwargs}")
 
         if request.stream:
-            return stream_completion_request(url, prompt, stop, gen_kwargs, request.model)
+            return stream_completion_request(
+                url, prompt, stop, gen_kwargs, request.model
+            )
         else:
             choices = []
             generated_tokens = 0
@@ -353,7 +360,12 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
                     auth=aws_auth,
                 )
                 if res.status_code != 200:
-                    raise Exception(res.text)
+                    logger.error(
+                        f"SageMaker endpoint request failed with status code {res.status_code}: {res.text}"
+                    )
+                    raise Exception(
+                        f"SageMaker endpoint request failed with status code {res.status_code}"
+                    )
                 # 응답을 구문 분석합니다.
                 res = res.json()[0]
                 # 스키마로 변환합니다.
@@ -378,7 +390,9 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )
@@ -431,7 +445,9 @@ class Embedding:
             auth=aws_auth,
         )
         res = res.json()
-        parsed_res = res.get("vectors", res.get("predictions", res.get("embeddings", None)))
+        parsed_res = res.get(
+            "vectors", res.get("predictions", res.get("embeddings", None))
+        )
 
         if isinstance(request.input, list):
             for idx, i in enumerate(parsed_res):
