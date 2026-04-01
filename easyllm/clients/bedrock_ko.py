@@ -47,7 +47,10 @@ def stream_chat_request(client, body, model):
     """스트리밍 채팅 요청을 위한 유틸리티 함수입니다."""
     id = f"hf-{generate(size=10)}"
     response = client.invoke_model_with_response_stream(
-        body=json.dumps(body), modelId=model, accept="application/json", contentType="application/json"
+        body=json.dumps(body),
+        modelId=model,
+        accept="application/json",
+        contentType="application/json",
     )
     stream = response.get("body")
 
@@ -55,7 +58,11 @@ def stream_chat_request(client, body, model):
         ChatCompletionStreamResponse(
             id=id,
             model=model,
-            choices=[ChatCompletionResponseStreamChoice(index=0, delta=DeltaMessage(role="assistant"))],
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0, delta=DeltaMessage(role="assistant")
+                )
+            ],
         )
     )
     # 생성된 각 토큰을 반환합니다.
@@ -69,14 +76,22 @@ def stream_chat_request(client, body, model):
                 ChatCompletionStreamResponse(
                     id=id,
                     model=model,
-                    choices=[ChatCompletionResponseStreamChoice(index=0, delta=DeltaMessage(content=text))],
+                    choices=[
+                        ChatCompletionResponseStreamChoice(
+                            index=0, delta=DeltaMessage(content=text)
+                        )
+                    ],
                 )
             )
     yield dump_object(
         ChatCompletionStreamResponse(
             id=id,
             model=model,
-            choices=[ChatCompletionResponseStreamChoice(index=0, finish_reason=reason, delta={})],
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0, finish_reason=reason, delta={}
+                )
+            ],
         )
     )
 
@@ -121,7 +136,9 @@ class ChatCompletion:
 
         # 모델이 model_mapping에 있는지 확인합니다.
         if model not in SUPPORTED_MODELS:
-            raise ValueError(f"모델 {model}은(는) 지원되지 않습니다. 지원되는 모델은 다음과 같습니다. {SUPPORTED_MODELS}")
+            raise ValueError(
+                f"모델 {model}은(는) 지원되지 않습니다. 지원되는 모델은 다음과 같습니다. {SUPPORTED_MODELS}"
+            )
 
         request = ChatCompletionRequest(
             messages=messages,
@@ -138,13 +155,10 @@ class ChatCompletion:
 
         if prompt_builder is None:
             logger.warn(
-                f"""huggingface.prompt_builder가 설정되지 않았습니다.
-기본 프롬프트 빌더를 사용합니다. 모델로 전송될 프롬프트는 다음과 같습니다.
-----------------------------------------
-{buildBasePrompt(request.messages)}.
-----------------------------------------
-사용자 지정 프롬프트 빌더를 사용하려면 bedrock.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요.
-easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다."""
+                "bedrock.prompt_builder가 설정되지 않았습니다. "
+                "기본 프롬프트 빌더를 사용합니다. "
+                "사용자 지정 프롬프트 빌더를 사용하려면 bedrock.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요. "
+                "easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다."
             )
             prompt = buildBasePrompt(request.messages)
         else:
@@ -182,7 +196,10 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
             generated_tokens = 0
             for _i in range(request.n):
                 response = client.invoke_model(
-                    body=json.dumps(body), modelId=model, accept="application/json", contentType="application/json"
+                    body=json.dumps(body),
+                    modelId=model,
+                    accept="application/json",
+                    contentType="application/json",
                 )
                 # 응답을 구문 분석합니다.
                 res = json.loads(response.get("body").read())
@@ -190,7 +207,9 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
                 # 스키마로 변환합니다.
                 parsed = ChatCompletionResponseChoice(
                     index=_i,
-                    message=ChatMessage(role="assistant", content=res["completion"].strip()),
+                    message=ChatMessage(
+                        role="assistant", content=res["completion"].strip()
+                    ),
                     finish_reason=res["stop_reason"],
                 )
                 generated_tokens += len(res["completion"].strip()) // 4
@@ -206,7 +225,9 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )

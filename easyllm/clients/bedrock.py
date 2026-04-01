@@ -47,7 +47,10 @@ def stream_chat_request(client, body, model):
     """Utility function for streaming chat requests."""
     id = f"hf-{generate(size=10)}"
     response = client.invoke_model_with_response_stream(
-        body=json.dumps(body), modelId=model, accept="application/json", contentType="application/json"
+        body=json.dumps(body),
+        modelId=model,
+        accept="application/json",
+        contentType="application/json",
     )
     stream = response.get("body")
 
@@ -55,7 +58,11 @@ def stream_chat_request(client, body, model):
         ChatCompletionStreamResponse(
             id=id,
             model=model,
-            choices=[ChatCompletionResponseStreamChoice(index=0, delta=DeltaMessage(role="assistant"))],
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0, delta=DeltaMessage(role="assistant")
+                )
+            ],
         )
     )
     # yield each generated token
@@ -69,14 +76,22 @@ def stream_chat_request(client, body, model):
                 ChatCompletionStreamResponse(
                     id=id,
                     model=model,
-                    choices=[ChatCompletionResponseStreamChoice(index=0, delta=DeltaMessage(content=text))],
+                    choices=[
+                        ChatCompletionResponseStreamChoice(
+                            index=0, delta=DeltaMessage(content=text)
+                        )
+                    ],
                 )
             )
     yield dump_object(
         ChatCompletionStreamResponse(
             id=id,
             model=model,
-            choices=[ChatCompletionResponseStreamChoice(index=0, finish_reason=reason, delta={})],
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0, finish_reason=reason, delta={}
+                )
+            ],
         )
     )
 
@@ -121,7 +136,9 @@ class ChatCompletion:
 
         # validate it model is in model_mapping
         if model not in SUPPORTED_MODELS:
-            raise ValueError(f"Model {model} is not supported. Supported models are: {SUPPORTED_MODELS}")
+            raise ValueError(
+                f"Model {model} is not supported. Supported models are: {SUPPORTED_MODELS}"
+            )
 
         request = ChatCompletionRequest(
             messages=messages,
@@ -138,13 +155,10 @@ class ChatCompletion:
 
         if prompt_builder is None:
             logger.warn(
-                f"""huggingface.prompt_builder is not set.
-Using default prompt builder for. Prompt sent to model will be:
-----------------------------------------
-{buildBasePrompt(request.messages)}.
-----------------------------------------
-If you want to use a custom prompt builder, set bedrock.prompt_builder to a function that takes a list of messages and returns a string.
-You can also use existing prompt builders by importing them from easyllm.prompt_utils"""
+                "bedrock.prompt_builder is not set. "
+                "Using default prompt builder. "
+                "If you want to use a custom prompt builder, set bedrock.prompt_builder to a function that takes a list of messages and returns a string. "
+                "You can also use existing prompt builders by importing them from easyllm.prompt_utils"
             )
             prompt = buildBasePrompt(request.messages)
         else:
@@ -182,7 +196,10 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
             generated_tokens = 0
             for _i in range(request.n):
                 response = client.invoke_model(
-                    body=json.dumps(body), modelId=model, accept="application/json", contentType="application/json"
+                    body=json.dumps(body),
+                    modelId=model,
+                    accept="application/json",
+                    contentType="application/json",
                 )
                 # parse response
                 res = json.loads(response.get("body").read())
@@ -190,7 +207,9 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
                 # convert to schema
                 parsed = ChatCompletionResponseChoice(
                     index=_i,
-                    message=ChatMessage(role="assistant", content=res["completion"].strip()),
+                    message=ChatMessage(
+                        role="assistant", content=res["completion"].strip()
+                    ),
                     finish_reason=res["stop_reason"],
                 )
                 generated_tokens += len(res["completion"].strip()) // 4
@@ -206,7 +225,9 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )

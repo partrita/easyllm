@@ -36,7 +36,10 @@ api_key = (
     )
     or HfFolder.get_token()
 )
-api_base = os.environ.get("HUGGINGFACE_API_BASE", None) or "https://api-inference.huggingface.co/models"
+api_base = (
+    os.environ.get("HUGGINGFACE_API_BASE", None)
+    or "https://api-inference.huggingface.co/models"
+)
 api_version = os.environ.get("HUGGINGFACE_API_VERSION", None) or "2023-07-29"
 prompt_builder = os.environ.get("HUGGINGFACE_PROMPT", None)
 stop_sequences = []
@@ -56,7 +59,11 @@ def stream_chat_request(client, prompt, stop, gen_kwargs, model):
         ChatCompletionStreamResponse(
             id=id,
             model=model,
-            choices=[ChatCompletionResponseStreamChoice(index=0, delta=DeltaMessage(role="assistant"))],
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0, delta=DeltaMessage(role="assistant")
+                )
+            ],
         )
     )
     # yield each generated token
@@ -77,14 +84,22 @@ def stream_chat_request(client, prompt, stop, gen_kwargs, model):
             ChatCompletionStreamResponse(
                 id=id,
                 model=model,
-                choices=[ChatCompletionResponseStreamChoice(index=0, delta=DeltaMessage(content=chunk.token.text))],
+                choices=[
+                    ChatCompletionResponseStreamChoice(
+                        index=0, delta=DeltaMessage(content=chunk.token.text)
+                    )
+                ],
             )
         )
     yield dump_object(
         ChatCompletionStreamResponse(
             id=id,
             model=model,
-            choices=[ChatCompletionResponseStreamChoice(index=0, finish_reason=reason, delta={})],
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0, finish_reason=reason, delta={}
+                )
+            ],
         )
     )
 
@@ -142,13 +157,10 @@ class ChatCompletion:
 
         if prompt_builder is None:
             logger.warn(
-                f"""huggingface.prompt_builder is not set.
-Using default prompt builder for. Prompt sent to model will be:
-----------------------------------------
-{buildBasePrompt(request.messages)}.
-----------------------------------------
-If you want to use a custom prompt builder, set huggingface.prompt_builder to a function that takes a list of messages and returns a string.
-You can also use existing prompt builders by importing them from easyllm.prompt_utils"""
+                "huggingface.prompt_builder is not set. "
+                "Using default prompt builder. "
+                "If you want to use a custom prompt builder, set huggingface.prompt_builder to a function that takes a list of messages and returns a string. "
+                "You can also use existing prompt builders by importing them from easyllm.prompt_utils"
             )
             prompt = buildBasePrompt(request.messages)
         else:
@@ -227,7 +239,9 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )
@@ -262,7 +276,11 @@ def stream_completion_request(client, prompt, stop, gen_kwargs, model):
             CompletionStreamResponse(
                 id=id,
                 model=model,
-                choices=[CompletionResponseStreamChoice(index=0, text=chunk.token.text, logprobs=chunk.token.logprob)],
+                choices=[
+                    CompletionResponseStreamChoice(
+                        index=0, text=chunk.token.text, logprobs=chunk.token.logprob
+                    )
+                ],
             )
         )
 
@@ -333,14 +351,11 @@ class Completion:
             request.prompt = request.prompt + request.suffix
 
         if prompt_builder is None:
-            logging.warn(
-                f"""huggingface.prompt_builder is not set.
-Using input as prompt builder. Prompt sent to model will be:
-----------------------------------------
-{request.prompt}.
-----------------------------------------
-If you want to use a custom prompt builder, set huggingface.prompt_builder to a function that takes a list of messages and returns a string.
-You can also use existing prompt builders by importing them from easyllm.prompt_utils"""
+            logger.warn(
+                "huggingface.prompt_builder is not set. "
+                "Using input as prompt builder. "
+                "If you want to use a custom prompt builder, set huggingface.prompt_builder to a function that takes a list of messages and returns a string. "
+                "You can also use existing prompt builders by importing them from easyllm.prompt_utils"
             )
             prompt = request.prompt
         else:
@@ -392,7 +407,9 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
         logger.debug(f"Generation parameters:\n{gen_kwargs}")
 
         if request.stream:
-            return stream_completion_request(client, prompt, stop, gen_kwargs, request.model)
+            return stream_completion_request(
+                client, prompt, stop, gen_kwargs, request.model
+            )
         else:
             choices = []
             generated_tokens = 0
@@ -423,7 +440,9 @@ You can also use existing prompt builders by importing them from easyllm.prompt_
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )
@@ -475,7 +494,13 @@ class Embedding:
 
         # client is currently not supporting batched request thats why we run sequentially
         emb = []
-        res = client.post(json={"inputs": request.input, "model": request.model, "task": "feature-extraction"})
+        res = client.post(
+            json={
+                "inputs": request.input,
+                "model": request.model,
+                "task": "feature-extraction",
+            }
+        )
         parsed_res = json.loads(res.decode())
         if isinstance(request.input, list):
             for idx, i in enumerate(parsed_res):

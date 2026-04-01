@@ -100,13 +100,10 @@ class ChatCompletion:
 
         if prompt_builder is None:
             logger.warn(
-                f"""huggingface.prompt_builder is not set.
-Using default prompt builder for. Prompt sent to model will be:
-----------------------------------------
-{buildBasePrompt(request.messages)}.
-----------------------------------------
-If you want to use a custom prompt builder, set huggingface.prompt_builder to a function that takes a list of messages and returns a string.
-You can also use existing prompt builders by importing them from easyllm.prompt_utils"""
+                "sagemaker.prompt_builder is not set. "
+                "Using default prompt builder. "
+                "If you want to use a custom prompt builder, set sagemaker.prompt_builder to a function that takes a list of messages and returns a string. "
+                "You can also use existing prompt builders by importing them from easyllm.prompt_utils"
             )
             prompt = buildBasePrompt(request.messages)
         else:
