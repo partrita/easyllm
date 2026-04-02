@@ -36,7 +36,10 @@ api_key = (
     )
     or HfFolder.get_token()
 )
-api_base = os.environ.get("HUGGINGFACE_API_BASE", None) or "https://api-inference.huggingface.co/models"
+api_base = (
+    os.environ.get("HUGGINGFACE_API_BASE", None)
+    or "https://api-inference.huggingface.co/models"
+)
 api_version = os.environ.get("HUGGINGFACE_API_VERSION", None) or "2023-07-29"
 prompt_builder = os.environ.get("HUGGINGFACE_PROMPT", None)
 stop_sequences = []
@@ -56,7 +59,11 @@ def stream_chat_request(client, prompt, stop, gen_kwargs, model):
         ChatCompletionStreamResponse(
             id=id,
             model=model,
-            choices=[ChatCompletionResponseStreamChoice(index=0, delta=DeltaMessage(role="assistant"))],
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0, delta=DeltaMessage(role="assistant")
+                )
+            ],
         )
     )
     # 생성된 각 토큰을 반환합니다.
@@ -77,14 +84,22 @@ def stream_chat_request(client, prompt, stop, gen_kwargs, model):
             ChatCompletionStreamResponse(
                 id=id,
                 model=model,
-                choices=[ChatCompletionResponseStreamChoice(index=0, delta=DeltaMessage(content=chunk.token.text))],
+                choices=[
+                    ChatCompletionResponseStreamChoice(
+                        index=0, delta=DeltaMessage(content=chunk.token.text)
+                    )
+                ],
             )
         )
     yield dump_object(
         ChatCompletionStreamResponse(
             id=id,
             model=model,
-            choices=[ChatCompletionResponseStreamChoice(index=0, finish_reason=reason, delta={})],
+            choices=[
+                ChatCompletionResponseStreamChoice(
+                    index=0, finish_reason=reason, delta={}
+                )
+            ],
         )
     )
 
@@ -142,13 +157,10 @@ class ChatCompletion:
 
         if prompt_builder is None:
             logger.warn(
-                f"""huggingface.prompt_builder가 설정되지 않았습니다.
-기본 프롬프트 빌더를 사용합니다. 모델로 전송될 프롬프트는 다음과 같습니다.
-----------------------------------------
-{buildBasePrompt(request.messages)}.
-----------------------------------------
-사용자 지정 프롬프트 빌더를 사용하려면 huggingface.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요.
-easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다."""
+                "huggingface.prompt_builder가 설정되지 않았습니다. "
+                "기본 프롬프트 빌더를 사용합니다. "
+                "사용자 지정 프롬프트 빌더를 사용하려면 huggingface.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요. "
+                "easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다."
             )
             prompt = buildBasePrompt(request.messages)
         else:
@@ -227,7 +239,9 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )
@@ -262,7 +276,11 @@ def stream_completion_request(client, prompt, stop, gen_kwargs, model):
             CompletionStreamResponse(
                 id=id,
                 model=model,
-                choices=[CompletionResponseStreamChoice(index=0, text=chunk.token.text, logprobs=chunk.token.logprob)],
+                choices=[
+                    CompletionResponseStreamChoice(
+                        index=0, text=chunk.token.text, logprobs=chunk.token.logprob
+                    )
+                ],
             )
         )
 
@@ -333,14 +351,11 @@ class Completion:
             request.prompt = request.prompt + request.suffix
 
         if prompt_builder is None:
-            logging.warn(
-                f"""huggingface.prompt_builder가 설정되지 않았습니다.
-입력을 프롬프트 빌더로 사용합니다. 모델로 전송될 프롬프트는 다음과 같습니다.
-----------------------------------------
-{request.prompt}.
-----------------------------------------
-사용자 지정 프롬프트 빌더를 사용하려면 huggingface.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요.
-easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다."""
+            logger.warn(
+                "huggingface.prompt_builder가 설정되지 않았습니다. "
+                "입력을 프롬프트 빌더로 사용합니다. "
+                "사용자 지정 프롬프트 빌더를 사용하려면 huggingface.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요. "
+                "easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다."
             )
             prompt = request.prompt
         else:
@@ -392,7 +407,9 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
         logger.debug(f"생성 매개변수:\n{gen_kwargs}")
 
         if request.stream:
-            return stream_completion_request(client, prompt, stop, gen_kwargs, request.model)
+            return stream_completion_request(
+                client, prompt, stop, gen_kwargs, request.model
+            )
         else:
             choices = []
             generated_tokens = 0
@@ -423,7 +440,9 @@ easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수
                     model=request.model,
                     choices=choices,
                     usage=Usage(
-                        prompt_tokens=prompt_tokens, completion_tokens=generated_tokens, total_tokens=total_tokens
+                        prompt_tokens=prompt_tokens,
+                        completion_tokens=generated_tokens,
+                        total_tokens=total_tokens,
                     ),
                 )
             )
@@ -475,7 +494,13 @@ class Embedding:
 
         # 클라이언트는 현재 일괄 요청을 지원하지 않으므로 순차적으로 실행합니다.
         emb = []
-        res = client.post(json={"inputs": request.input, "model": request.model, "task": "feature-extraction"})
+        res = client.post(
+            json={
+                "inputs": request.input,
+                "model": request.model,
+                "task": "feature-extraction",
+            }
+        )
         parsed_res = json.loads(res.decode())
         if isinstance(request.input, list):
             for idx, i in enumerate(parsed_res):

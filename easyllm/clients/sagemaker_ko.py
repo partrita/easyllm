@@ -99,13 +99,12 @@ class ChatCompletion:
         )
 
         if prompt_builder is None:
-            logger.warn(f"""huggingface.prompt_builder가 설정되지 않았습니다.
-기본 프롬프트 빌더를 사용합니다. 모델로 전송될 프롬프트는 다음과 같습니다.
-----------------------------------------
-{buildBasePrompt(request.messages)}.
-----------------------------------------
-사용자 지정 프롬프트 빌더를 사용하려면 huggingface.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요.
-easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다.""")
+            logger.warn(
+                "sagemaker.prompt_builder가 설정되지 않았습니다. "
+                "기본 프롬프트 빌더를 사용합니다. "
+                "사용자 지정 프롬프트 빌더를 사용하려면 sagemaker.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요. "
+                "easyllm.prompt_utils에서 기존 프롬프트 빌더를 가져와 사용할 수도 있습니다."
+            )
             prompt = buildBasePrompt(request.messages)
         else:
             prompt = build_prompt(request.messages, prompt_builder)
