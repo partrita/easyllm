@@ -187,7 +187,7 @@ class ChatCompletion:
             "stop_sequences": stop,
             "anthropic_version": model_version_mapping[model],
         }
-        logger.debug(f"Generation body:\n{body}")
+
 
         if request.stream:
             return stream_chat_request(client, body, model)
@@ -214,7 +214,7 @@ class ChatCompletion:
                 )
                 generated_tokens += len(res["completion"].strip()) // 4
                 choices.append(parsed)
-                logger.debug(f"Response at index {_i}:\n{parsed}")
+
             # calculate usage details
             # TODO: fix when details is fixed
             prompt_tokens = int(len(prompt) / 4)

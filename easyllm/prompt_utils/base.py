@@ -41,5 +41,5 @@ You can open an issue or PR to add more prompt builders at https://github.com/ph
     else:
         prompt = builder(messages)
 
-    logger.debug(f"Prompt sent to model will be:\n{prompt}")
+
     return prompt
