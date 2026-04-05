@@ -58,7 +58,11 @@ class AWSSigV4(AuthBase):
                     if type(kwargs["session"]) == boto3.Session:
                         session = kwargs["session"]
                     else:
-                        raise ValueError("Session must be boto3.Session, {} invalid, ".format(type(kwargs["session"])))
+                        raise ValueError(
+                            "Session must be boto3.Session, {} invalid, ".format(
+                                type(kwargs["session"])
+                            )
+                        )
                 else:
                     session = boto3.Session()
                 logger.debug("Using boto3 session: %s", session)
@@ -77,7 +81,9 @@ class AWSSigV4(AuthBase):
                 logger.debug("Checking environment for credentials")
                 self.aws_access_key_id = os.environ.get("AWS_ACCESS_KEY_ID")
                 self.aws_secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
-                self.aws_session_token = os.environ.get("AWS_SESSION_TOKEN") or os.environ.get("AWS_SECURITY_TOKEN")
+                self.aws_session_token = os.environ.get(
+                    "AWS_SESSION_TOKEN"
+                ) or os.environ.get("AWS_SECURITY_TOKEN")
         # Last, fail if still not found
         if self.aws_access_key_id is None or self.aws_secret_access_key is None:
             raise KeyError(
@@ -89,10 +95,14 @@ class AWSSigV4(AuthBase):
         # Next, try environment variables or use boto3
         if self.region is None:
             logger.debug("Checking environment for region")
-            self.region = os.environ.get("AWS_DEFAULT_REGION") or os.environ.get("AWS_REGION")
+            self.region = os.environ.get("AWS_DEFAULT_REGION") or os.environ.get(
+                "AWS_REGION"
+            )
         # Last, fail if not found
         if self.region is None:
-            raise KeyError("Region is required, please set AWS_DEFAULT_REGION or AWS_REGION environment variable")
+            raise KeyError(
+                "Region is required, please set AWS_DEFAULT_REGION or AWS_REGION environment variable"
+            )
 
     def __call__(self, r: PreparedRequest) -> PreparedRequest:
         """Called to add authentication information to request
@@ -129,9 +139,13 @@ class AWSSigV4(AuthBase):
         if "Host" not in r.headers:
             r.headers["Host"] = host
         if "Content-Type" not in r.headers:
-            r.headers["Content-Type"] = "application/x-www-form-urlencoded; charset=utf-8; application/json"
+            r.headers["Content-Type"] = (
+                "application/x-www-form-urlencoded; charset=utf-8; application/json"
+            )
         if "User-Agent" not in r.headers:
-            r.headers["User-Agent"] = "python-requests/{} auth-aws-sigv4/{}".format(requests_version, __version__)
+            r.headers["User-Agent"] = "python-requests/{} auth-aws-sigv4/{}".format(
+                requests_version, __version__
+            )
         r.headers["X-AMZ-Date"] = self.amzdate
         if self.aws_session_token is not None:
             r.headers["x-amz-security-token"] = self.aws_session_token
@@ -161,19 +175,33 @@ class AWSSigV4(AuthBase):
         # must be trimmed and lowercase, and sorted in code point order from
         # low to high. Note that there is a trailing \n.
         headers_to_sign = sorted(
-            filter(lambda h: h.startswith("x-amz-") or h == "host", (h_key.lower() for h_key in r.headers.keys()))
+            filter(
+                lambda h: h.startswith("x-amz-") or h == "host",
+                (h_key.lower() for h_key in r.headers.keys()),
+            )
         )
-        canonical_headers = "".join((":".join((h, r.headers[h])) + "\n" for h in headers_to_sign))
+        canonical_headers = "".join(
+            (":".join((h, r.headers[h])) + "\n" for h in headers_to_sign)
+        )
         signed_headers = ";".join(headers_to_sign)
 
         # Combine elements to create canonical request
         canonical_request = "\n".join(
-            [r.method, uri, canonical_querystring, canonical_headers, signed_headers, payload_hash]
+            [
+                r.method,
+                uri,
+                canonical_querystring,
+                canonical_headers,
+                signed_headers,
+                payload_hash,
+            ]
         )
         logger.debug("Canonical Request: '%s'", canonical_request)
 
         # Task 2: Create string to sign
-        credential_scope = "/".join([self.datestamp, self.region, self.service, "aws4_request"])
+        credential_scope = "/".join(
+            [self.datestamp, self.region, self.service, "aws4_request"]
+        )
         string_to_sign = "\n".join(
             [
                 "AWS4-HMAC-SHA256",
@@ -185,16 +213,22 @@ class AWSSigV4(AuthBase):
         logger.debug("String-to-Sign: '%s'", string_to_sign)
 
         # Task 3: Calculate Signature
-        k_date = sign_msg(("AWS4" + self.aws_secret_access_key).encode("utf-8"), self.datestamp)
+        k_date = sign_msg(
+            ("AWS4" + self.aws_secret_access_key).encode("utf-8"), self.datestamp
+        )
         k_region = sign_msg(k_date, self.region)
         k_service = sign_msg(k_region, self.service)
         k_signing = sign_msg(k_service, "aws4_request")
-        signature = hmac.new(k_signing, string_to_sign.encode("utf-8"), hashlib.sha256).hexdigest()
+        signature = hmac.new(
+            k_signing, string_to_sign.encode("utf-8"), hashlib.sha256
+        ).hexdigest()
         logger.debug("Signature: %s", signature)
 
         # Task 4: Add signing information to request
-        r.headers["Authorization"] = "AWS4-HMAC-SHA256 Credential={}/{}, SignedHeaders={}, Signature={}".format(
-            self.aws_access_key_id, credential_scope, signed_headers, signature
+        r.headers["Authorization"] = (
+            "AWS4-HMAC-SHA256 Credential={}/{}, SignedHeaders={}, Signature={}".format(
+                self.aws_access_key_id, credential_scope, signed_headers, signature
+            )
         )
         logger.debug(
             "Returning Request: <PreparedRequest method=%s, url=%s, headers=%s, SignedHeaders=%s, Signature=%s",
@@ -229,7 +263,9 @@ def get_bedrock_client(
         Optional choice of getting different client to perform operations with the Amazon Bedrock service.
     """
     if region is None:
-        target_region = os.environ.get("AWS_REGION", os.environ.get("AWS_DEFAULT_REGION"))
+        target_region = os.environ.get(
+            "AWS_REGION", os.environ.get("AWS_DEFAULT_REGION")
+        )
     else:
         target_region = region
 
@@ -252,10 +288,14 @@ def get_bedrock_client(
     if assumed_role:
         logger.info(f"  Using role: {assumed_role}", end="")
         sts = session.client("sts")
-        response = sts.assume_role(RoleArn=str(assumed_role), RoleSessionName="llm-bedrock")
+        response = sts.assume_role(
+            RoleArn=str(assumed_role), RoleSessionName="llm-bedrock"
+        )
         logger.info(" ... successful!")
         client_kwargs["aws_access_key_id"] = response["Credentials"]["AccessKeyId"]
-        client_kwargs["aws_secret_access_key"] = response["Credentials"]["SecretAccessKey"]
+        client_kwargs["aws_secret_access_key"] = response["Credentials"][
+            "SecretAccessKey"
+        ]
         client_kwargs["aws_session_token"] = response["Credentials"]["SessionToken"]
     else:
         client_kwargs["aws_access_key_id"] = aws_access_key_id
@@ -267,7 +307,9 @@ def get_bedrock_client(
     else:
         service_name = "bedrock"
 
-    bedrock_client = session.client(service_name=service_name, config=retry_config, **client_kwargs)
+    bedrock_client = session.client(
+        service_name=service_name, config=retry_config, **client_kwargs
+    )
 
     logger.info("boto3 Bedrock client successfully created!")
     return bedrock_client

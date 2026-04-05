@@ -36,7 +36,16 @@ class EllipsisFilter(BaseModel):
     """
 
     name: str = "ellipsis"
-    ellipsis: List[str] = ["...", "[...]", "…", "(...)", "[…]", "-»", "read more..", "read more"]
+    ellipsis: List[str] = [
+        "...",
+        "[...]",
+        "…",
+        "(...)",
+        "[…]",
+        "-»",
+        "read more..",
+        "read more",
+    ]
     remove_percentage: float = 0.3
 
     def __call__(self, text):

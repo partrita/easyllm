@@ -170,7 +170,7 @@ class ChatCompletion:
                 )
                 if res.status_code != 200:
                     logger.error(
-                        f"SageMaker endpoint request failed with status code {res.status_code}: {res.text}"
+                        f"SageMaker endpoint request failed with status code {res.status_code}"
                     )
                     raise Exception(
                         f"SageMaker endpoint request failed with status code {res.status_code}"
@@ -285,7 +285,7 @@ class Completion:
             request.prompt = request.prompt + request.suffix
 
         if prompt_builder is None:
-            logging.warn(
+            logger.warning(
                 "huggingface.prompt_builder가 설정되지 않았습니다. "
                 "입력을 프롬프트 빌더로 사용합니다. "
                 "사용자 지정 프롬프트 빌더를 사용하려면 huggingface.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요. "
@@ -294,7 +294,6 @@ class Completion:
             prompt = request.prompt
         else:
             prompt = build_prompt(request.prompt, prompt_builder)
-
 
         # 모델이 URL인 경우 직접 사용합니다.
         if request.model:
@@ -359,7 +358,7 @@ class Completion:
                 )
                 if res.status_code != 200:
                     logger.error(
-                        f"SageMaker endpoint request failed with status code {res.status_code}: {res.text}"
+                        f"SageMaker endpoint request failed with status code {res.status_code}"
                     )
                     raise Exception(
                         f"SageMaker endpoint request failed with status code {res.status_code}"

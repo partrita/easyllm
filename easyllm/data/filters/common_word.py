@@ -3,7 +3,19 @@ from typing import List
 from pydantic import BaseModel
 
 COMMON_WORDS_EN = ["the", "be", "to", "of", "and", "that", "have", "with", "this"]
-COMMON_WORDS_DE = ["der", "die", "das", "er" "sein", "zu", "ist", "war", "von", "und", "haben", "mit"]
+COMMON_WORDS_DE = [
+    "der",
+    "die",
+    "das",
+    "er" "sein",
+    "zu",
+    "ist",
+    "war",
+    "von",
+    "und",
+    "haben",
+    "mit",
+]
 
 
 class CommonWordFilter(BaseModel):
