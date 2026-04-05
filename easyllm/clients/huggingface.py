@@ -228,7 +228,7 @@ class ChatCompletion:
                 )
                 generated_tokens += res.details.generated_tokens
                 choices.append(parsed)
-                logger.debug(f"Response at index {_i}:\n{parsed}")
+
             # calculate usage details
             # TODO: fix when details is fixed
             prompt_tokens = int(len(prompt) / 4)
@@ -360,7 +360,7 @@ class Completion:
             prompt = request.prompt
         else:
             prompt = build_prompt(request.prompt, prompt_builder)
-        logger.debug(f"Prompt sent to model will be:\n{prompt}")
+
 
         # if the model is a url, use it directly
         if request.model:
@@ -429,7 +429,7 @@ class Completion:
 
                 generated_tokens += res.details.generated_tokens
                 choices.append(parsed)
-                logger.debug(f"Response at index {_i}:\n{parsed}")
+
             # calcuate usage details
             # TODO: fix when details is fixed
             prompt_tokens = int(len(prompt) / 4)

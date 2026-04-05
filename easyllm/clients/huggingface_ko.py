@@ -228,7 +228,7 @@ class ChatCompletion:
                 )
                 generated_tokens += res.details.generated_tokens
                 choices.append(parsed)
-                logger.debug(f"인덱스 {_i}의 응답:\n{parsed}")
+
             # 사용량 세부 정보를 계산합니다.
             # TODO: 세부 정보가 수정되면 수정합니다.
             prompt_tokens = int(len(prompt) / 4)
@@ -360,7 +360,7 @@ class Completion:
             prompt = request.prompt
         else:
             prompt = build_prompt(request.prompt, prompt_builder)
-        logger.debug(f"모델로 전송될 프롬프트:\n{prompt}")
+
 
         # 모델이 URL인 경우 직접 사용합니다.
         if request.model:
@@ -429,7 +429,7 @@ class Completion:
 
                 generated_tokens += res.details.generated_tokens
                 choices.append(parsed)
-                logger.debug(f"인덱스 {_i}의 응답:\n{parsed}")
+
             # 사용량 세부 정보를 계산합니다.
             # TODO: 세부 정보가 수정되면 수정합니다.
             prompt_tokens = int(len(prompt) / 4)

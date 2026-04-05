@@ -187,7 +187,7 @@ class ChatCompletion:
             "stop_sequences": stop,
             "anthropic_version": model_version_mapping[model],
         }
-        logger.debug(f"생성 본문:\n{body}")
+
 
         if request.stream:
             return stream_chat_request(client, body, model)
@@ -214,7 +214,7 @@ class ChatCompletion:
                 )
                 generated_tokens += len(res["completion"].strip()) // 4
                 choices.append(parsed)
-                logger.debug(f"인덱스 {_i}의 응답:\n{parsed}")
+
             # 사용량 세부 정보를 계산합니다.
             # TODO: 세부 정보가 수정되면 수정합니다.
             prompt_tokens = int(len(prompt) / 4)
