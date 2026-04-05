@@ -154,7 +154,7 @@ class ChatCompletion:
         )
 
         if prompt_builder is None:
-            logger.warn(
+            logger.warning(
                 "bedrock.prompt_builder가 설정되지 않았습니다. "
                 "기본 프롬프트 빌더를 사용합니다. "
                 "사용자 지정 프롬프트 빌더를 사용하려면 bedrock.prompt_builder를 메시지 목록을 가져와 문자열을 반환하는 함수로 설정하세요. "
@@ -187,7 +187,6 @@ class ChatCompletion:
             "stop_sequences": stop,
             "anthropic_version": model_version_mapping[model],
         }
-
 
         if request.stream:
             return stream_chat_request(client, body, model)

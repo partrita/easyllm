@@ -22,7 +22,10 @@ def build_vicuna_prompt(messages: Union[List[Dict[str, str]], str]) -> str:
     conversation = []
 
     if isinstance(messages, str):
-        messages = [ChatMessage(content="", role="system"), ChatMessage(content=messages, role="user")]
+        messages = [
+            ChatMessage(content="", role="system"),
+            ChatMessage(content=messages, role="user"),
+        ]
     else:
         if isinstance(messages[0], dict):
             messages = [ChatMessage(**message) for message in messages]
@@ -31,7 +34,9 @@ def build_vicuna_prompt(messages: Union[List[Dict[str, str]], str]) -> str:
         if message.role == "user":
             conversation.append(f"{VICUNA_USER_TOKEN}{message.content.strip()}\n")
         elif message.role == "assistant":
-            conversation.append(f"{VICUNA_ASSISTANT_TOKEN}{message.content.strip()}{VICUNA_EOS_TOKEN}\n")
+            conversation.append(
+                f"{VICUNA_ASSISTANT_TOKEN}{message.content.strip()}{VICUNA_EOS_TOKEN}\n"
+            )
         elif message.role == "function":
             raise ValueError("Vicuna does not support function calls.")
         elif message.role == "system" and index == 0:

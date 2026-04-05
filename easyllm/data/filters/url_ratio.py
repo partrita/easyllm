@@ -9,9 +9,9 @@ class UrlRatioFilter(BaseModel):
     """
 
     name: str = "url_ratio"
-    regex: re.Pattern[
-        str
-    ] = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+    regex: re.Pattern[str] = (
+        r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+    )
     remove_percentage: float = 0.2
 
     def __call__(self, text):

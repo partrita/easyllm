@@ -19,7 +19,9 @@ class NonAlphaNumericFilter(BaseModel):
         if num_characters == 0:
             return True
         # calculate the percentage of non-alphanumeric characters
-        percentage = 1 - ((num_characters - len(self.regex.findall(text))) / num_characters)
+        percentage = 1 - (
+            (num_characters - len(self.regex.findall(text))) / num_characters
+        )
         # if the percentage is greater than the remove_percentage then remove
         if percentage > self.remove_percentage:
             return True

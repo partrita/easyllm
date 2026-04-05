@@ -45,7 +45,9 @@ class CookieBannerFilter(BaseModel):
     """
 
     name: str = "cookie_banner"
-    regex: re.Pattern = re.compile(r"(terms of use|privacy policy|copyright|all rights reserved)", re.IGNORECASE)
+    regex: re.Pattern = re.compile(
+        r"(terms of use|privacy policy|copyright|all rights reserved)", re.IGNORECASE
+    )
     remove_percentage: float = 0.4
 
     def __call__(self, text):

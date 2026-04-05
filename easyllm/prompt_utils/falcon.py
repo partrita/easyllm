@@ -6,7 +6,9 @@ from easyllm.schema.base import ChatMessage
 falcon_stop_sequences = ["\nUser:", "<|endoftext|>", " User:", "###"]
 
 
-def build_falcon_prompt(messages: Union[List[Dict[str, str]], str, List[ChatMessage]]) -> str:
+def build_falcon_prompt(
+    messages: Union[List[Dict[str, str]], str, List[ChatMessage]],
+) -> str:
     """
     Builds a falcon prompt for a chat conversation. refrence https://huggingface.co/blog/falcon-180b#prompt-format
 
@@ -22,7 +24,10 @@ def build_falcon_prompt(messages: Union[List[Dict[str, str]], str, List[ChatMess
     conversation = []
 
     if isinstance(messages, str):
-        messages = [ChatMessage(content="", role="system"), ChatMessage(content=messages, role="user")]
+        messages = [
+            ChatMessage(content="", role="system"),
+            ChatMessage(content=messages, role="user"),
+        ]
     else:
         if isinstance(messages[0], dict):
             messages = [ChatMessage(**message) for message in messages]

@@ -67,7 +67,9 @@ class KenlmModel:
         "►": "-",
     }
     unicode_punct_re: re.Pattern = re.compile(f"[{''.join(unicode_punct.keys())}]")
-    non_printing_chars_re: re.Pattern = re.compile(f"[{''.join(map(chr, list(range(0,32)) + list(range(127,160))))}]")
+    non_printing_chars_re: re.Pattern = re.compile(
+        f"[{''.join(map(chr, list(range(0,32)) + list(range(127,160))))}]"
+    )
     model: kenlm.Model = None
     tokenizer: SentencePiece = None
     accent: bool = False
@@ -97,8 +99,12 @@ class KenlmModel:
         language_or_path: str,
     ):
         try:
-            model = hf_hub_download("philschmid/kenlm", filename=f"wikipedia/{language_or_path}.arpa.bin")
-            tokenizer = hf_hub_download("philschmid/kenlm", filename=f"wikipedia/{language_or_path}.sp.model")
+            model = hf_hub_download(
+                "philschmid/kenlm", filename=f"wikipedia/{language_or_path}.arpa.bin"
+            )
+            tokenizer = hf_hub_download(
+                "philschmid/kenlm", filename=f"wikipedia/{language_or_path}.sp.model"
+            )
         except Exception:
             raise ValueError(
                 f"KenLM model for {language_or_path} not found at https://huggingface.co/philschmid/kenlm. Please train your own model and upload it to the hub."
@@ -184,7 +190,9 @@ class PerplexityFilter(BaseModel):
     max_threshold: int = 1000
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def __init__(self, language: str, min_threshold: int = 0, max_threshold: int = 1000):
+    def __init__(
+        self, language: str, min_threshold: int = 0, max_threshold: int = 1000
+    ):
         super().__init__()
         self.min_threshold = min_threshold
         self.max_threshold = max_threshold

@@ -21,7 +21,10 @@ def build_wizardlm_prompt(messages: Union[List[Dict[str, str]], str]) -> str:
     conversation = []
 
     if isinstance(messages, str):
-        messages = [ChatMessage(content="", role="system"), ChatMessage(content=messages, role="user")]
+        messages = [
+            ChatMessage(content="", role="system"),
+            ChatMessage(content=messages, role="user"),
+        ]
     else:
         if isinstance(messages[0], dict):
             messages = [ChatMessage(**message) for message in messages]

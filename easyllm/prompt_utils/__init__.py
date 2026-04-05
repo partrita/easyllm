@@ -1,4 +1,7 @@
-from easyllm.prompt_utils.anthropic import anthropic_stop_sequences, build_anthropic_prompt
+from easyllm.prompt_utils.anthropic import (
+    anthropic_stop_sequences,
+    build_anthropic_prompt,
+)
 
 from .chatml_hf import (
     build_chatml_falcon_prompt,
