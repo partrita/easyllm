@@ -26,7 +26,10 @@ class SymbolToWordFilter(BaseModel):
         ellipses_ratio = num_ellipses / num_words
 
         # if the percentage is greater than the remove_percentage then remove
-        if hash_ratio > self.remove_percentage or ellipses_ratio > self.remove_percentage:
+        if (
+            hash_ratio > self.remove_percentage
+            or ellipses_ratio > self.remove_percentage
+        ):
             return True
 
         # otherwise keep

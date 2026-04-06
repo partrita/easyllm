@@ -170,7 +170,7 @@ class ChatCompletion:
                 )
                 if res.status_code != 200:
                     logger.error(
-                        f"SageMaker endpoint request failed with status code {res.status_code}: {res.text}"
+                        f"SageMaker endpoint request failed with status code {res.status_code}"
                     )
                     raise Exception(
                         f"SageMaker endpoint request failed with status code {res.status_code}"
@@ -285,7 +285,7 @@ class Completion:
             request.prompt = request.prompt + request.suffix
 
         if prompt_builder is None:
-            logging.warn(
+            logger.warning(
                 "huggingface.prompt_builder is not set. "
                 "Using input as prompt builder. "
                 "If you want to use a custom prompt builder, set huggingface.prompt_builder to a function that takes a list of messages and returns a string. "
@@ -294,7 +294,6 @@ class Completion:
             prompt = request.prompt
         else:
             prompt = build_prompt(request.prompt, prompt_builder)
-
 
         # if the model is a url, use it directly
         if request.model:
@@ -359,7 +358,7 @@ class Completion:
                 )
                 if res.status_code != 200:
                     logger.error(
-                        f"SageMaker endpoint request failed with status code {res.status_code}: {res.text}"
+                        f"SageMaker endpoint request failed with status code {res.status_code}"
                     )
                     raise Exception(
                         f"SageMaker endpoint request failed with status code {res.status_code}"

@@ -154,7 +154,7 @@ class ChatCompletion:
         )
 
         if prompt_builder is None:
-            logger.warn(
+            logger.warning(
                 "bedrock.prompt_builder is not set. "
                 "Using default prompt builder. "
                 "If you want to use a custom prompt builder, set bedrock.prompt_builder to a function that takes a list of messages and returns a string. "
@@ -187,7 +187,6 @@ class ChatCompletion:
             "stop_sequences": stop,
             "anthropic_version": model_version_mapping[model],
         }
-
 
         if request.stream:
             return stream_chat_request(client, body, model)
