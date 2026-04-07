@@ -14,8 +14,8 @@ def test_build_wizardlm_prompt_single_message():
 
 def test_build_wizardlm_prompt_multiple_messages():
     messages = [
-        {"content":"You are a chat bot.", "role":"system"},
-        {"content":"Hello!", "role": "user"},
+        {"content": "You are a chat bot.", "role": "system"},
+        {"content": "Hello!", "role": "user"},
     ]
     expected_output = "You are a chat bot. USER: Hello! ASSISTANT: "
     result = build_wizardlm_prompt(messages)
@@ -24,8 +24,8 @@ def test_build_wizardlm_prompt_multiple_messages():
 
 def test_build_wizardlm_prompt_function_call():
     messages = [
-        {"content":"You are a chat bot.", "role":"system"},
-        {"content":"some_function()", "role": "function"},
+        {"content": "You are a chat bot.", "role": "system"},
+        {"content": "some_function()", "role": "function"},
     ]
     with pytest.raises(ValueError, match="WizardLM does not support function calls."):
         build_wizardlm_prompt(messages)

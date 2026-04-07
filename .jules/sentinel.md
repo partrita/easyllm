@@ -10,3 +10,7 @@
 **Vulnerability:** The SageMaker client's error handling logged the complete raw response body (`res.text`) into standard application logs via `logger.error` when the API returned a non-200 status code.
 **Learning:** Automatically including dynamic external API responses inside error logs creates a critical data exposure risk, as these responses could contain raw sensitive data, internal stack traces, or even credentials that are unexpectedly returned by the server on error.
 **Prevention:** Hardcode static error or warning messages that instruct the user about the failure status, strictly avoiding the interpolation of raw, unredacted external API responses into standard application logs.
+## 2024-04-07 - Sensitive Headers Logged in AWS Client
+**Vulnerability:** The AWS client (`easyllm/utils/aws.py`) was logging the `Authorization` and `x-amz-security-token` headers in plain text via `logger.debug` when returning the prepared HTTP request.
+**Learning:** Even internal API logs, when they dump request objects or raw dictionaries for debugging purposes, can accidentally serialize and expose highly sensitive credentials or signatures if not explicitly redacted.
+**Prevention:** Always deep copy or filter dictionaries representing HTTP request headers (and similarly with body payloads) to replace exact secret keys or tokens with `[REDACTED]` prior to passing them into logging utilities.

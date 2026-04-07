@@ -230,11 +230,19 @@ class AWSSigV4(AuthBase):
                 self.aws_access_key_id, credential_scope, signed_headers, signature
             )
         )
+        safe_headers = {
+            k: (
+                v
+                if k.lower() not in ["authorization", "x-amz-security-token"]
+                else "[REDACTED]"
+            )
+            for k, v in r.headers.items()
+        }
         logger.debug(
             "Returning Request: <PreparedRequest method=%s, url=%s, headers=%s, SignedHeaders=%s, Signature=%s",
             r.method,
             r.url,
-            r.headers,
+            safe_headers,
             signed_headers,
             signature,
         )
