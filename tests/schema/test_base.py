@@ -18,9 +18,7 @@ def test_chat_message() -> None:
     assert isinstance(message.role, type(role))
 
 
-@pytest.mark.parametrize(
-    "role", ["user", "assistant", "function", "system"]
-)
+@pytest.mark.parametrize("role", ["user", "assistant", "function", "system"])
 def test_all_valid_roles(role: str) -> None:
     """Test that all valid roles are accepted."""
     message = ChatMessage(content="Hello!", role=role)
@@ -95,9 +93,7 @@ def test_invalid_usage(prompt_tokens, completion_tokens, total_tokens) -> None:
         (10, 10, "10"),
     ],
 )
-def test_str_to_int_for_usage(
-    prompt_tokens, completion_tokens, total_tokens
-) -> None:
+def test_str_to_int_for_usage(prompt_tokens, completion_tokens, total_tokens) -> None:
     """Test that str inputs are converted to int."""
     usage = Usage(
         prompt_tokens=prompt_tokens,

@@ -14,18 +14,20 @@ def test_build_chatml_hf_prompt_single_message():
 
 def test_build_chatml_hf_prompt_multiple_messages():
     messages = [
-        {"content":"You are a chat bot.", "role":"system"},
-        {"content":"Hello!", "role": "user"},
+        {"content": "You are a chat bot.", "role": "system"},
+        {"content": "Hello!", "role": "user"},
     ]
-    expected_output = "<|system|>\nYou are a chat bot.<|end|>\n<|user|>\nHello!<|end|>\n<|assistant|>"
+    expected_output = (
+        "<|system|>\nYou are a chat bot.<|end|>\n<|user|>\nHello!<|end|>\n<|assistant|>"
+    )
     result = build_chatml_hf_prompt(messages)
     assert result == expected_output
 
 
 def test_build_chatml_hf_prompt_function_call():
     messages = [
-        {"content":"You are a chat bot.", "role":"system"},
-        {"content":"some_function()", "role": "function"},
+        {"content": "You are a chat bot.", "role": "system"},
+        {"content": "some_function()", "role": "function"},
     ]
     with pytest.raises(ValueError, match="HF ChatML does not support function calls."):
         build_chatml_hf_prompt(messages)

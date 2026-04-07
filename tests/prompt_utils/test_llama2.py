@@ -12,10 +12,12 @@ def test_build_llama2_prompt_single_message():
 
 def test_build_llama2_prompt_multiple_messages():
     messages = [
-        {"content":"You are a chat bot.", "role":"system"},
-        {"content":"Hello!", "role": "user"},
+        {"content": "You are a chat bot.", "role": "system"},
+        {"content": "Hello!", "role": "user"},
     ]
-    expected_output = "<s>[INST] <<SYS>>\nYou are a chat bot.\n<</SYS>>\n\nHello! [/INST]"
+    expected_output = (
+        "<s>[INST] <<SYS>>\nYou are a chat bot.\n<</SYS>>\n\nHello! [/INST]"
+    )
     result = build_llama2_prompt(messages)
     print(f"RESULT: {result}")
     assert result == expected_output
@@ -23,8 +25,8 @@ def test_build_llama2_prompt_multiple_messages():
 
 def test_build_llama2_prompt_function_call():
     messages = [
-        {"content":"You are a chat bot.", "role":"system"},
-        {"content":"some_function()", "role": "function"},
+        {"content": "You are a chat bot.", "role": "system"},
+        {"content": "some_function()", "role": "function"},
     ]
     with pytest.raises(ValueError, match="Llama 2 does not support function calls."):
         build_llama2_prompt(messages)

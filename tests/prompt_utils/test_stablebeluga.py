@@ -14,18 +14,22 @@ def test_build_stablebeluga_prompt_single_message():
 
 def test_build_stablebeluga_prompt_multiple_messages():
     messages = [
-        {"content":"You are a chat bot.", "role":"system"},
-        {"content":"Hello!", "role": "user"},
+        {"content": "You are a chat bot.", "role": "system"},
+        {"content": "Hello!", "role": "user"},
     ]
-    expected_output = "### System:\nYou are a chat bot.\n\n### User:\nHello!\n\n### Assistant:"
+    expected_output = (
+        "### System:\nYou are a chat bot.\n\n### User:\nHello!\n\n### Assistant:"
+    )
     result = build_stablebeluga_prompt(messages)
     assert result == expected_output
 
 
 def test_build_stablebeluga_prompt_function_call():
     messages = [
-        {"content":"You are a chat bot.", "role":"system"},
-        {"content":"some_function()", "role": "function"},
+        {"content": "You are a chat bot.", "role": "system"},
+        {"content": "some_function()", "role": "function"},
     ]
-    with pytest.raises(ValueError, match="stablebeluga does not support function calls."):
+    with pytest.raises(
+        ValueError, match="stablebeluga does not support function calls."
+    ):
         build_stablebeluga_prompt(messages)
