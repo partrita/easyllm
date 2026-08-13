@@ -3,9 +3,9 @@
 check_dirs := . 
 
 style: 
-	ruff $(check_dirs) --fix
+	ruff format $(check_dirs)
 check: 
-	ruff $(check_dirs) 
+	ruff check --fix $(check_dirs) 
 test: 
 	pytest
 
